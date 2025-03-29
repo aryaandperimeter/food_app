@@ -1,58 +1,61 @@
-import { useState } from 'react';
-
-interface Donation {
-  id: string;
-  foodName: string;
-  description: string;
-  quantity: string;
-  expiration: string;
-  pickupTime: string;
-  notes: string;
-  status: 'Available' | 'Claimed' | 'Picked Up';
-  restaurantName: string;
-}
-
-// Mock data for demonstration
-const mockDonations: Donation[] = [
-  {
-    id: '1',
-    foodName: 'Fresh Pasta',
-    description: 'Homemade pasta with sauce',
-    quantity: '10 servings',
-    expiration: '2024-03-30T20:00:00',
-    pickupTime: '2024-03-30T18:00:00',
-    notes: 'Please bring containers',
-    status: 'Available',
-    restaurantName: 'Italian Delight',
-  },
-  {
-    id: '2',
-    foodName: 'Sandwich Platter',
-    description: 'Assorted sandwiches',
-    quantity: '15 pieces',
-    expiration: '2024-03-30T21:00:00',
-    pickupTime: '2024-03-30T19:00:00',
-    notes: 'Vegetarian options included',
-    status: 'Available',
-    restaurantName: 'Fresh Bites',
-  },
-];
+import { useState, useEffect } from 'react';
+import { api, Donation } from '../services/api';
 
 const ShelterDashboard = () => {
-  const [donations, setDonations] = useState<Donation[]>(mockDonations);
+  const [donations, setDonations] = useState<Donation[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const shelterName = 'Test Shelter'; // In a real app, this would come from user authentication
 
-  const handleClaim = (id: string) => {
-    setDonations(donations.map(donation => 
-      donation.id === id 
-        ? { ...donation, status: 'Claimed' as const }
-        : donation
-    ));
+  useEffect(() => {
+    fetchDonations();
+  }, []);
+
+  const fetchDonations = async () => {
+    try {
+      const data = await api.getDonations();
+      setDonations(data);
+    } catch (err) {
+      setError('Failed to fetch donations');
+      console.error(err);
+    }
+  };
+
+  const handleClaim = async (id: string) => {
+    try {
+      if (!id) {
+        console.error('No donation ID provided');
+        setError('Invalid donation ID');
+        return;
+      }
+      console.log('Claiming donation with ID:', id);
+      const updatedDonation = await api.claimDonation(id, shelterName);
+      
+      // Update the donations list with the updated donation
+      setDonations(prevDonations => 
+        prevDonations.map(donation => {
+          const donationId = donation._id || donation.id;
+          if (!donationId) return donation;
+          return donationId === id ? updatedDonation : donation;
+        })
+      );
+      
+      setError(null);
+    } catch (err: any) {
+      console.error('Error in handleClaim:', err);
+      setError(err.message || 'Failed to claim donation');
+    }
   };
 
   return (
     <div className="min-h-screen p-6">
       <div className="max-w-4xl mx-auto space-y-8">
         <h1 className="text-3xl font-bold text-gray-900">Shelter Dashboard</h1>
+        
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            {error}
+          </div>
+        )}
         
         <div className="card">
           <h2 className="text-xl font-semibold mb-4">Available Donations</h2>
@@ -80,9 +83,13 @@ const ShelterDashboard = () => {
                       {donation.notes && <p>Notes: {donation.notes}</p>}
                     </div>
                   </div>
+                  
                   {donation.status === 'Available' && (
                     <button
-                      onClick={() => handleClaim(donation.id)}
+                      onClick={() => {
+                        console.log('Donation to claim:', donation);
+                        handleClaim(donation._id || donation.id);
+                      }}
                       className="btn-primary ml-4"
                     >
                       Claim Donation

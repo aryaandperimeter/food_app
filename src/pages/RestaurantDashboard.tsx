@@ -1,35 +1,53 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-
-interface Donation {
-  id: string;
-  foodName: string;
-  description: string;
-  quantity: string;
-  expiration: string;
-  pickupTime: string;
-  notes: string;
-  status: 'Available' | 'Claimed' | 'Picked Up';
-}
+import { api, Donation } from '../services/api';
 
 const RestaurantDashboard = () => {
   const [donations, setDonations] = useState<Donation[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const { register, handleSubmit, reset } = useForm();
 
-  const onSubmit = (data: any) => {
-    const newDonation: Donation = {
-      id: Date.now().toString(),
-      ...data,
-      status: 'Available',
-    };
-    setDonations([...donations, newDonation]);
-    reset();
+  // Fetch donations on component mount
+  useEffect(() => {
+    fetchDonations();
+  }, []);
+
+  const fetchDonations = async () => {
+    try {
+      const data = await api.getDonations();
+      setDonations(data);
+    } catch (err) {
+      setError('Failed to fetch donations');
+      console.error(err);
+    }
+  };
+
+  const onSubmit = async (data: any) => {
+    try {
+      const newDonation = await api.createDonation({
+        ...data,
+        status: 'Available',
+        restaurantName: 'Test Restaurant', // In a real app, this would come from user authentication
+      });
+      setDonations([...donations, newDonation]);
+      reset();
+      setError(null);
+    } catch (err) {
+      setError('Failed to create donation');
+      console.error(err);
+    }
   };
 
   return (
     <div className="min-h-screen p-6">
       <div className="max-w-4xl mx-auto space-y-8">
         <h1 className="text-3xl font-bold text-gray-900">Restaurant Dashboard</h1>
+        
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            {error}
+          </div>
+        )}
         
         {/* Donation Form */}
         <div className="card">

@@ -15,26 +15,29 @@ const RestaurantDashboard = () => {
   const fetchDonations = async () => {
     try {
       const data = await api.getDonations();
-      setDonations(data);
+      setDonations(data || []);
+      setError(null);
     } catch (err) {
+      console.error('Error fetching donations:', err);
       setError('Failed to fetch donations');
-      console.error(err);
     }
   };
 
   const onSubmit = async (data: any) => {
     try {
+      console.log('Submitting donation data:', data);
       const newDonation = await api.createDonation({
         ...data,
         status: 'Available',
         restaurantName: 'Test Restaurant', // In a real app, this would come from user authentication
       });
-      setDonations([...donations, newDonation]);
+      console.log('Successfully created donation:', newDonation);
+      setDonations(prevDonations => [...prevDonations, newDonation]);
       reset();
       setError(null);
-    } catch (err) {
-      setError('Failed to create donation');
-      console.error(err);
+    } catch (err: any) {
+      console.error('Error creating donation:', err);
+      setError(err.message || 'Failed to create donation');
     }
   };
 
@@ -53,6 +56,27 @@ const RestaurantDashboard = () => {
         <div className="card">
           <h2 className="text-xl font-semibold mb-4">Add Food Donation</h2>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Restaurant Name</label>
+              <input
+                type="text"
+                {...register('restaurantName')}
+                className="input-field"
+                required
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Phone Number</label>
+              <input
+                type="tel"
+                {...register('phoneNumber')}
+                className="input-field"
+                placeholder="(123) 456-7890"
+                required
+              />
+            </div>
+            
             <div>
               <label className="block text-sm font-medium text-gray-700">Food Item Name</label>
               <input

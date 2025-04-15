@@ -7,8 +7,10 @@ const router = express.Router();
 router.get('/', async (req: Request, res: Response) => {
   try {
     const donations = await Donation.find().sort({ createdAt: -1 });
-    res.json(donations);
+    // Return empty array instead of error when no donations exist
+    res.json(donations || []);
   } catch (error) {
+    console.error('Error fetching donations:', error);
     res.status(500).json({ message: 'Error fetching donations' });
   }
 });
@@ -16,11 +18,17 @@ router.get('/', async (req: Request, res: Response) => {
 // Create a new donation
 router.post('/', async (req: Request, res: Response) => {
   try {
+    console.log('Creating donation with data:', req.body);
     const donation = new Donation(req.body);
     const savedDonation = await donation.save();
+    console.log('Successfully created donation:', savedDonation);
     res.status(201).json(savedDonation);
-  } catch (error) {
-    res.status(400).json({ message: 'Error creating donation' });
+  } catch (error: any) {
+    console.error('Error creating donation:', error);
+    res.status(400).json({ 
+      message: 'Error creating donation', 
+      error: error.message 
+    });
   }
 });
 

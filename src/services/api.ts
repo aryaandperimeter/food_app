@@ -11,6 +11,7 @@ export interface Donation {
   notes?: string;
   status: 'Available' | 'Claimed' | 'Picked Up';
   restaurantName: string;
+  phoneNumber: string;
   claimedBy?: string;
 }
 

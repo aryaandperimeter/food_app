@@ -1,27 +1,117 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  html, body {
+    @apply min-h-screen m-0 p-0;
+    font-family: 'Inter', sans-serif;
+  }
+  
   body {
-    @apply bg-gray-50 text-gray-900;
+    @apply text-gray-800;
+    background: linear-gradient(135deg, #f5f3ff 0%, #e0f7fa 100%) !important;
+    background-attachment: fixed !important;
+    min-height: 100vh !important;
+  }
+
+  #root {
+    @apply min-h-screen;
+    background: inherit !important;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold;
+    color: #333333;
+  }
+
+  p {
+    @apply leading-relaxed;
+    color: #4a5568;
+  }
+
+  body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%);
+    z-index: -1;
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+    @apply px-4 py-2 text-white font-medium rounded-lg transition-all duration-200;
+    background: linear-gradient(135deg, #6C63FF 0%, #00C9A7 100%);
+    box-shadow: 0 2px 4px rgba(108, 99, 255, 0.2);
+  }
+  
+  .btn-primary:hover {
+    background: linear-gradient(135deg, #5a52d9 0%, #00b396 100%);
+    box-shadow: 0 4px 6px rgba(108, 99, 255, 0.3);
+    transform: translateY(-1px);
   }
   
   .btn-secondary {
-    @apply px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2;
+    @apply px-4 py-2 text-gray-700 font-medium rounded-lg transition-all duration-200;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+  
+  .btn-secondary:hover {
+    background: #f8f9fa;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
   }
 
   .card {
-    @apply bg-white rounded-lg shadow-md p-6;
+    @apply rounded-xl p-6 border border-gray-100;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(8px);
   }
 
   .input-field {
-    @apply mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500;
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg transition-all duration-200;
+    background: white;
+  }
+
+  .input-field:focus {
+    @apply outline-none ring-2;
+    border-color: #6C63FF;
+    box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.1);
+  }
+
+  .status-badge {
+    @apply px-2 py-1 text-xs font-medium rounded-full;
+  }
+
+  .status-available {
+    @apply bg-green-100 text-green-800;
+  }
+
+  .status-claimed {
+    @apply bg-yellow-100 text-yellow-800;
+  }
+
+  .status-picked-up {
+    @apply bg-blue-100 text-blue-800;
+  }
+
+  .page-title {
+    @apply text-4xl font-bold mb-8;
+    background: linear-gradient(135deg, #6C63FF 0%, #00C9A7 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .section-title {
+    @apply text-2xl font-semibold mb-4;
+    color: #333333;
   }
 }

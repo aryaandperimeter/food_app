@@ -13,10 +13,11 @@ const ShelterDashboard = () => {
   const fetchDonations = async () => {
     try {
       const data = await api.getDonations();
-      setDonations(data);
+      setDonations(data || []);
+      setError(null);
     } catch (err) {
+      console.error('Error fetching donations:', err);
       setError('Failed to fetch donations');
-      console.error(err);
     }
   };
 
@@ -77,6 +78,7 @@ const ShelterDashboard = () => {
                     <p className="text-gray-600 mt-1">{donation.description}</p>
                     <div className="mt-2 text-sm text-gray-500">
                       <p>Restaurant: {donation.restaurantName}</p>
+                      <p>Contact: {donation.phoneNumber}</p>
                       <p>Quantity: {donation.quantity}</p>
                       <p>Expiration: {new Date(donation.expiration).toLocaleString()}</p>
                       <p>Pickup Time: {new Date(donation.pickupTime).toLocaleString()}</p>

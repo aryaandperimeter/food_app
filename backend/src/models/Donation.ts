@@ -9,6 +9,7 @@ export interface IDonation extends Document {
   notes?: string;
   status: 'Available' | 'Claimed' | 'Picked Up';
   restaurantName: string;
+  phoneNumber: string;
   claimedBy?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -45,6 +46,10 @@ const donationSchema = new Schema<IDonation>(
       default: 'Available',
     },
     restaurantName: {
+      type: String,
+      required: true,
+    },
+    phoneNumber: {
       type: String,
       required: true,
     },

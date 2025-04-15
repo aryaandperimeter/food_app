@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const Home = () => {
+  const { user } = useAuth();
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4">
       <div className="text-center max-w-3xl mx-auto">
@@ -18,9 +21,24 @@ const Home = () => {
             <p className="text-gray-600 mb-6">
               Have excess food? Donate it to local shelters and make a positive impact in your community.
             </p>
-            <Link to="/restaurant" className="btn-primary block text-center">
-              Donate Food
-            </Link>
+            {user ? (
+              user.role === 'restaurant' ? (
+                <Link to="/restaurant" className="btn-primary block text-center">
+                  Go to Dashboard
+                </Link>
+              ) : (
+                <div className="text-red-500 mb-4">Please log in as a restaurant to access this feature.</div>
+              )
+            ) : (
+              <div className="space-y-4">
+                <Link to="/register?role=restaurant" className="btn-primary block text-center">
+                  Sign Up as Restaurant
+                </Link>
+                <Link to="/login?role=restaurant" className="btn-secondary block text-center">
+                  Sign In as Restaurant
+                </Link>
+              </div>
+            )}
           </div>
           
           <div className="card transform hover:scale-105 transition-all duration-200">
@@ -28,9 +46,24 @@ const Home = () => {
             <p className="text-gray-600 mb-6">
               Looking for food donations? Browse available donations and claim them for your shelter.
             </p>
-            <Link to="/shelter" className="btn-primary block text-center">
-              Browse Donations
-            </Link>
+            {user ? (
+              user.role === 'shelter' ? (
+                <Link to="/shelter" className="btn-primary block text-center">
+                  Go to Dashboard
+                </Link>
+              ) : (
+                <div className="text-red-500 mb-4">Please log in as a shelter to access this feature.</div>
+              )
+            ) : (
+              <div className="space-y-4">
+                <Link to="/register?role=shelter" className="btn-primary block text-center">
+                  Sign Up as Shelter
+                </Link>
+                <Link to="/login?role=shelter" className="btn-secondary block text-center">
+                  Sign In as Shelter
+                </Link>
+              </div>
+            )}
           </div>
         </div>
 

@@ -2,21 +2,22 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import authRoutes from './routes/auth';
 import donationRoutes from './routes/donations';
+import { auth } from './middleware/auth';
 
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 5000;
 
-// CORS configuration
+// Middleware
+app.use(express.json());
 app.use(cors({
   origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002'],
   methods: ['GET', 'POST', 'PATCH', 'DELETE'],
-  allowedHeaders: ['Content-Type'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
-
-app.use(express.json());
 
 // MongoDB connection
 const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/food-donations';
@@ -30,12 +31,13 @@ app.get('/api/test', (req, res) => {
 });
 
 // Routes
-app.use('/api/donations', donationRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/donations', auth, donationRoutes);
 
 // Error handling middleware
-app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.error('Error:', err.stack);
-  res.status(500).json({ message: 'Something went wrong!' });
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  console.error(err.stack);
+  res.status(500).json({ error: 'Something went wrong!' });
 });
 
 app.listen(port, () => {
